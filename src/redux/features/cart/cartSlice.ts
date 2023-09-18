@@ -1,5 +1,6 @@
 import { IProduct } from '@/types/globalTypes';
 import { createSlice } from '@reduxjs/toolkit';
+import type { PayloadAction } from '@reduxjs/toolkit';
 
 interface ICart {
   products: IProduct[];
@@ -12,7 +13,25 @@ const initialState: ICart = {
 const cartSlice = createSlice({
   name: 'cart',
   initialState,
-  reducers: {},
+  reducers: {
+    addToCart: (state, action: PayloadAction<IProduct>) => {
+      const exiting = state.products.find(
+        (product) => product._id === action.payload._id
+      );
+      if (exiting) {
+        exiting.quantity = exiting.quantity! + 1;
+      } else {
+        state.products.push({ ...action.payload, quantity: 1 });
+      }
+    },
+    removeFromCart: (state, action: PayloadAction<IProduct>) => {
+      state.products = state.products.filter(
+        (product) => product._id !== action.payload._id
+      );
+    },
+  },
 });
+
+export const { addToCart, removeFromCart } = cartSlice.actions;
 
 export default cartSlice.reducer;
